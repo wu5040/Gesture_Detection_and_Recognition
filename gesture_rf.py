@@ -63,9 +63,6 @@ class BOW(object):
         return x_data,y_data
 
 
-
-
-
     def sift_descriptor_extractor(self,img_path):
         '''
         特征提取：提取数据集中每幅图像的特征点，然后提取特征描述符，形成特征数据(如：SIFT或者SURF方法)；
@@ -96,23 +93,19 @@ def getLookUp():
     return lookup,reverselookup
 
 
-
-
-
-
 if __name__=='__main__':
     lookup,reverselookup=getLookUp()
     print(lookup,reverselookup)
     bow = BOW()
     X,Y=bow.getData(20)
-    # from sklearn.model_selection import train_test_split
-    # X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.25, random_state = 0)
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.25, random_state = 0)
 
-    # for i in range(10,40):
-    #     for j in range(5,30):
-    #         print(i," ",j,end=":")
+    for i in range(10,40):
+        for j in range(5,30):
+            print(i," ",j,end=":")
 
-    #         rf = RandomForestClassifier(n_estimators=i, max_depth=j)
-    #         rf.fit(X_train,y_train)
-    #         print(rf.score(X_test,y_test))
+            rf = RandomForestClassifier(n_estimators=i, max_depth=j)
+            rf.fit(X_train,y_train)
+            print(rf.score(X_test,y_test))
 
