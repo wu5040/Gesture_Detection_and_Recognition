@@ -54,7 +54,7 @@ class BOW(object):
         for j in range(classes):        
             for i in range(length):                  
                 #有一些图像会抛异常,主要是因为该图片没有sift描述符
-                print(j+1,i+1,"/",length)                
+                print("building BOWKMeansTrainer: ",j+1,i+1,"/",length)                
                 descriptor = self.sift_descriptor_extractor(files[j][i])                                                          
                 if not descriptor is None:
                     bow_kmeans_trainer.add(descriptor)                
@@ -65,7 +65,7 @@ class BOW(object):
         self.voc = bow_kmeans_trainer.cluster()
         
         #输出词汇字典  <class 'numpy.ndarray'> (40, 128)
-        print(type(self.voc),self.voc.shape)
+        print("输出词汇字典:",type(self.voc),self.voc.shape)
         
         #初始化bow提取器(设置词汇字典),用于提取每一张图像的BOW特征描述
         self.bow_img_descriptor_extractor = cv2.BOWImgDescriptorExtractor(self.descriptor_extractor,flann)        
@@ -78,22 +78,23 @@ class BOW(object):
         traindata,trainlabels = [],[]
         for j in range(classes):
             for i in range(samples):
-                print("", j+1,i+1,"/samples")                   
+                print("adding features to svm trainer: ", j+1,i+1,"/samples")                   
                 descriptor = self.bow_descriptor_extractor(files[j][i])
                 if not descriptor is None:
                     traindata.extend(descriptor)
                     trainlabels.append(labels[j][i])                
                             
          
-        #创建一个SVM对象    
-        self.svm = cv2.ml.SVM_create()
-        self.svm.setType(cv2.ml.SVM_C_SVC)
-        self.svm.setGamma(0.5)
-        self.svm.setC(30)
-        self.svm.setKernel(cv2.ml.SVM_RBF)
-        #使用训练数据和标签进行训练
-        self.svm.train(np.array(traindata),cv2.ml.ROW_SAMPLE,np.array(trainlabels))
+        # #创建一个SVM对象    
+        # self.svm = cv2.ml.SVM_create()
+        # self.svm.setType(cv2.ml.SVM_C_SVC)
+        # self.svm.setGamma(0.5)
+        # self.svm.setC(30)
+        # self.svm.setKernel(cv2.ml.SVM_RBF)
+        # #使用训练数据和标签进行训练
+        # self.svm.train(np.array(traindata),cv2.ml.ROW_SAMPLE,np.array(trainlabels))
 
+        return  traindata,trainlabels
         
         
     def save(self,path):
@@ -102,7 +103,7 @@ class BOW(object):
         '''
         print('saving  model....')
         #保存svm模型
-        self.svm.save(path)
+        # self.svm.save(path)
         #保存bow模型
         f1 = os.path.join(os.path.dirname(path),'dict.pkl')
         with open(f1,'wb') as f:
