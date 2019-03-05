@@ -36,66 +36,14 @@ def prepare_GestData(path):
     
     print("载入数据集完成：共10类。每类样本数为：",length,"sum:",sum(length))
 
-    return files,labels
-
-
-
-
-
-
-def prepare_data(rootpath0):
-    '''
-    加载数据集  
-    args：
-        rootpath：数据集所在的根目录
-                  要求在该路径下，存放数据，每一类使用一个文件夹存放，文件名即为类名
-        sample：指定获取的每一类样本长度
-
-    return：
-        train_path：训练集路径 list类型  [['calss0-1','calss0-2','calss0-3','class0-4',...]
-                                         ['calss1-1','calss1-2','calss1-3','class1-4',...]
-                                         ['calss2-1','calss2-2','calss2-3','class2-4',...]
-                                         ['calss3-1','calss3-2','calss3-3','class3-4',...]                                        
-        labels：每一个样本类别标签 list类型 [[0,0,0,0]...
-                                            [1,1,1,1]...
-                                            [2,2,2,2]...
-                                            [3,3,3,3]...                                            
-                                            ...]
-        classes：每一个类别对应的名字 list类型
-    '''
-    files = [[], [], [], [], [], [], [], [], [], []]
-    labels = [[], [], [], [], [], [], [], [], [], []]
-    # 获取rootpath下的所有文件夹
-    classes = ['01_palm', '02_l', '03_fist',  '04_fist_moved',
-               '05_thumb', '06_index', '07_ok', '08_palm_moved', '09_c', '10_down']
-    # 遍历每个类别样本
-
-    for i in range(10):
-        rootpath = rootpath0 + '0' + str(i)
-        for idx in range(len(classes)):
-            # 获取当前类别文件所在文件夹的全路径
-            path = os.path.join(rootpath, classes[idx])
-            # print(path)
-            # 遍历每一个文件路径
-            filelist = [os.path.join(path, x) for x in os.listdir(
-                path) if os.path.isfile(os.path.join(path, x))]
-
-            # 追加到字典
-            files[idx].extend(filelist)
-            labels[idx].extend([idx+1]*200)
-
-    # 返回files为10×2000，10种手势，每种2000个数量
-    # 返回labels对应于files
-    
-    print("数据集加载完毕：共10种手势，每种"+str(len(files[0]))+"个。")
-    return files, labels, classes
+    return files,labels,length
 
 
 if __name__ == '__main__':
     '''
     1、训练或者直接加载训练好的模型
     '''
-    # 训练？
+    # 训练
     is_training = True
     bow = BOW()
     files = []
@@ -103,33 +51,34 @@ if __name__ == '__main__':
 
     if is_training:
         # 用来训练的样本的个数，样本个数 越大，训练准确率相对越高
-        samples = 5
-        # 根路径
-        rootpath = './Gesture_Detection_and_Recognition/GestData/'
-        # 训练集图片路径
-        filesAll, labelsAll = prepare_GestData(rootpath)
+        train_Percent = 1000
 
-        for i in range(len(filesAll)):
-            files.append(filesAll[i][:samples])
-            labels.append(labelsAll[i][:samples])
+        # 根路径
+        rootpath = 'GestData/'
+        # 训练集图片路径
+        filesAll, labelsAll, length = prepare_GestData(rootpath)
+
+        # for i in range(len(filesAll)):
+        #     files.append(filesAll[i][:])
+        #     labels.append(labelsAll[i][:])
 
         # print("训练集图片，每类各有"+str(len(files[0]))+"个样本。")
 
         # k越大，训练准确率相对越高
-        trainData, trainLabels = bow.fit(files, labels, 20, samples//5)
-        print(trainLabels)
+        trainData, trainLabels = bow.fit(filesAll, labelsAll, 300, 200)
+        
         # 保存模型
-        bow.save('Gesture_Detection_and_Recognition/svm.mat')
+        bow.save('svm.mat')
         print("length of trainData:", len(trainData), len(trainData[0]))
         print("length of trainLabels:", len(trainLabels))
 
 
-        with open('Gesture_Detection_and_Recognition/trainData.csv', 'w', newline='') as csvfile:
+        with open('trainData.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             for row in trainData:
                 writer.writerow(row)
 
-        with open('Gesture_Detection_and_Recognition/trainLabels.csv', 'w', newline='') as csvfile:
+        with open('trainLabels.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(trainLabels)
 
