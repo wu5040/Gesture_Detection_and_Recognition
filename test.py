@@ -19,6 +19,30 @@ Created on Thu Oct 18 15:16:20 2018
 '''
 
 
+def prepare_GestData(path):
+    print("载入数据集GestData...")
+    files=[]
+    labels=[]
+    length=[]
+    for i in range(1,11):
+        fileslist=[]
+        labelslist=[]
+        for file in os.listdir(path+str(i)+"/"):
+            fileslist.append(path+str(i)+"/"+file)
+            labelslist.append(i)
+        files.append(fileslist)
+        labels.append(labelslist)
+        length.append(len(fileslist))
+    
+    print("载入数据集完成：共10类。每类样本数为：",length,"sum:",sum(length))
+
+    return files,labels
+
+
+
+
+
+
 def prepare_data(rootpath0):
     '''
     加载数据集  
@@ -81,31 +105,31 @@ if __name__ == '__main__':
         # 用来训练的样本的个数，样本个数 越大，训练准确率相对越高
         samples = 5
         # 根路径
-        rootpath = 'leapGestRecog/'
+        rootpath = './Gesture_Detection_and_Recognition/GestData/'
         # 训练集图片路径
-        filesAll, labelsAll, classes = prepare_data(rootpath)
+        filesAll, labelsAll = prepare_GestData(rootpath)
 
         for i in range(len(filesAll)):
             files.append(filesAll[i][:samples])
             labels.append(labelsAll[i][:samples])
 
-        print("训练集图片，每类各有"+str(len(files[0]))+"个样本。")
+        # print("训练集图片，每类各有"+str(len(files[0]))+"个样本。")
 
         # k越大，训练准确率相对越高
         trainData, trainLabels = bow.fit(files, labels, 20, samples//5)
         print(trainLabels)
         # 保存模型
-        bow.save('svm.mat')
+        bow.save('Gesture_Detection_and_Recognition/svm.mat')
         print("length of trainData:", len(trainData), len(trainData[0]))
         print("length of trainLabels:", len(trainLabels))
 
-        
-        with open('trainData.csv', 'w', newline='') as csvfile:
+
+        with open('Gesture_Detection_and_Recognition/trainData.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             for row in trainData:
                 writer.writerow(row)
 
-        with open('trainLabels.csv', 'w', newline='') as csvfile:
+        with open('Gesture_Detection_and_Recognition/trainLabels.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(trainLabels)
 
