@@ -65,22 +65,23 @@ if __name__ == '__main__':
         # print("训练集图片，每类各有"+str(len(files[0]))+"个样本。")
 
         # k越大，训练准确率相对越高
-        trainData, trainLabels = bow.fit(filesAll, labelsAll, 300, 200)
-        
-        # 保存模型
-        bow.save('svm.mat')
-        print("length of trainData:", len(trainData), len(trainData[0]))
-        print("length of trainLabels:", len(trainLabels))
+        for kk in [500]:
+            print("\n构建bow, k=",kk,"...")
+            trainData, trainLabels = bow.fit(filesAll, labelsAll, kk, 200)
+            
+            # 保存模型
+            bow.save("1dict_"+str(kk)+".pkl")
+            print("length of trainData:", len(trainData), len(trainData[0]))
+            print("length of trainLabels:", len(trainLabels))
 
+            with open('1trainData_'+ str(kk) +'.csv', 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                for row in trainData:
+                    writer.writerow(row)
 
-        with open('trainData.csv', 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            for row in trainData:
-                writer.writerow(row)
-
-        with open('trainLabels.csv', 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(trainLabels)
+            with open('1trainLabels_'+ str(kk) +'.csv', 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(trainLabels)
 
     else:
         # 加载模型

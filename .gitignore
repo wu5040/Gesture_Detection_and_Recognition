@@ -5,7 +5,9 @@ __pycache__/
 
 leapGestRecog/
 GestData/
-
+*.csv
+*.pkl
+*.png 
 
 # C extensions
 *.so
